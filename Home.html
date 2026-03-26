@@ -7,6 +7,20 @@
 	<link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+	<header class="header">
+		<div class="brand"><img src = "images/gameController.png" alt="Game Controller" width="32" height="32">Game Genesis</div>
+		<button class="hamburger" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="homeNav" id="menuBtn">☰</button>
+		<nav class="nav" id="homeNav" aria-label="Home navigation" aria-hidden="true">
+			<a href="Index.html">Main Menu</a>
+			<a href="#">Home</a>
+			<a href="#">About</a>
+            <a href="#">Services</a>
+            <a href="#">Blog</a>
+			<a href="#">Contact</a>
+		</nav>
+	</header>
+	<div class="menu-overlay" id="menuOverlay" aria-hidden="true"></div>
+
 	<main class="hero">
 		<h1>Game Genesis</h1>
 		<form class="prompt-bar" action="#" method="get">
@@ -19,6 +33,51 @@
 			/>
 			<button class="prompt-btn" type="submit">Send</button>
 		</form>
+		<section class="recent-games" aria-label="Recent games played">
+			<h2 class="recent-games-title">Recent Games Played</h2>
+			<div class="recent-games-box"></div>
+		</section>
 	</main>
+
+	<script>
+		const menuBtn = document.getElementById('menuBtn');
+		const homeNav = document.getElementById('homeNav');
+		const menuOverlay = document.getElementById('menuOverlay');
+		const MOBILE_BREAKPOINT = 700;
+
+		function setMenuState(isOpen) {
+			homeNav.classList.toggle('show', isOpen);
+			menuOverlay.classList.toggle('show', isOpen);
+			menuBtn.setAttribute('aria-expanded', String(isOpen));
+			homeNav.setAttribute('aria-hidden', String(!isOpen));
+			menuOverlay.setAttribute('aria-hidden', String(!isOpen));
+			document.body.classList.toggle('menu-open', isOpen);
+		}
+
+		function closeMenu() {
+			setMenuState(false);
+		}
+
+		function openMenu() {
+			setMenuState(true);
+		}
+
+		menuBtn.addEventListener('click', () => {
+			setMenuState(!homeNav.classList.contains('show'));
+		});
+
+		menuOverlay.addEventListener('click', closeMenu);
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape') closeMenu();
+		});
+
+		homeNav.querySelectorAll('a').forEach((link) => {
+			link.addEventListener('click', closeMenu);
+		});
+
+		window.addEventListener('resize', () => {
+			if (window.innerWidth > MOBILE_BREAKPOINT) closeMenu();
+		});
+	</script>
 </body>
 </html>
