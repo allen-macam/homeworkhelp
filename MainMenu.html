@@ -8,23 +8,28 @@
 		:root{--bg:#ffffff;--accent:#2563eb;--text:#111827}
 		*{box-sizing:border-box}
 		body{font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text)}
+		body.menu-open{overflow:hidden}
 		.header{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;border-bottom:1px solid #e6edf6}
 		.brand{display:flex;align-items:center;gap:.5rem;font-weight:700;color:var(--accent)}
 		.nav{display:flex;gap:.5rem;align-items:center}
 		.nav a{color:var(--text);text-decoration:none;padding:.5rem .7rem;border-radius:.5rem}
 		.nav a:hover{background:#f3f6fb}
 		.hamburger{display:none;border:0;background:transparent;font-size:1.4rem;cursor:pointer}
+		.menu-overlay{display:none}
 		@media (max-width:700px){
-			.nav{position:absolute;top:64px;left:0;right:0;flex-direction:column;background:var(--bg);padding:1rem;border-top:1px solid #eee;display:none}
-			.nav.show{display:flex}
-			.hamburger{display:block}
+			.hamburger{display:block;z-index:31}
+			.menu-overlay{display:block;position:fixed;inset:0;background:rgba(17,24,39,.4);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:29}
+			.menu-overlay.show{opacity:1;pointer-events:auto}
+			.nav{position:fixed;top:0;right:0;bottom:0;width:min(82vw,320px);flex-direction:column;align-items:flex-start;gap:.2rem;background:var(--bg);padding:5rem 1rem 1rem;box-shadow:-12px 0 32px rgba(0,0,0,.14);transform:translateX(100%);transition:transform .25s ease;z-index:30}
+			.nav.show{transform:translateX(0)}
+			.nav a{width:100%;padding:.85rem .75rem}
 		}
 	</style>
 </head>
 <body>
 	<header class="header">
-		<div class="brand">🏠 <span>MainSite</span></div>
-		<button class="hamburger" aria-label="Toggle menu" id="menuBtn">☰</button>
+		<div class="brand"><img src = "images/gameController.png" alt="Game Controller" width="32" height="32"><span>TeamSteam</span></div>
+		<button class="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="mainNav" id="menuBtn">☰</button>
 		<nav class="nav" id="mainNav" aria-label="Main navigation">
 			<a href="#">Home</a>
 			<a href="#">About</a>
@@ -33,17 +38,53 @@
 			<a href="#">Contact</a>
 		</nav>
 	</header>
+	<div class="menu-overlay" id="menuOverlay" aria-hidden="true"></div>
 
 	<main style="padding:1rem">
-		<h1>Welcome</h1>
+		<h1>Welcome to Game Genesis!</h1>
 		<p>Use the menu above to navigate. Resize the window to see responsive behavior.</p>
 	</main>
 
 	<script>
 		const btn = document.getElementById('menuBtn');
 		const nav = document.getElementById('mainNav');
-		btn.addEventListener('click', ()=> nav.classList.toggle('show'));
-		window.addEventListener('resize', ()=> { if (window.innerWidth > 700) nav.classList.remove('show'); });
+		const overlay = document.getElementById('menuOverlay');
+
+		function closeMenu() {
+			nav.classList.remove('show');
+			overlay.classList.remove('show');
+			btn.setAttribute('aria-expanded', 'false');
+			document.body.classList.remove('menu-open');
+		}
+
+		function openMenu() {
+			nav.classList.add('show');
+			overlay.classList.add('show');
+			btn.setAttribute('aria-expanded', 'true');
+			document.body.classList.add('menu-open');
+		}
+
+		btn.addEventListener('click', () => {
+			const isOpen = nav.classList.contains('show');
+			if (isOpen) {
+				closeMenu();
+			} else {
+				openMenu();
+			}
+		});
+
+		overlay.addEventListener('click', closeMenu);
+		document.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape') closeMenu();
+		});
+
+		nav.querySelectorAll('a').forEach((link) => {
+			link.addEventListener('click', closeMenu);
+		});
+
+		window.addEventListener('resize', () => {
+			if (window.innerWidth > 700) closeMenu();
+		});
 	</script>
 </body>
 </html>
